@@ -1,15 +1,28 @@
+import json
+import math
+import os
 import sys
+from re import sub
 
 from plexapi.myplex import MyPlexAccount, PlexServer
 
+from args import DRY_RUN, LIBRARY, TYPE
+from colors import bcolors
+from genres import getGenres
+from plex import plexConnect
+from progress_bar import printProgressBar
 from setup import (
-    PLEX_BASE_URL, 
-    PLEX_PASSWORD, 
-    PLEX_SERVER_NAME, 
-    PLEX_TOKEN, 
-    PLEX_USERNAME
+    PLEX_BASE_URL,
+    PLEX_COLLECTION_PREFIX,
+    PLEX_PASSWORD,
+    PLEX_SERVER_NAME,
+    PLEX_TOKEN,
+    PLEX_USERNAME,
+    validateDotEnv
 )
+from util import *
 
+validateDotEnv(TYPE)
 
 def plexConnect():
     print('\nConnecting to Plex...')
@@ -22,11 +35,102 @@ def plexConnect():
         elif PLEX_BASE_URL is not None and PLEX_TOKEN is not None:
             plex = PlexServer(PLEX_BASE_URL, PLEX_TOKEN)
 
-        else:
-            raise Exception("No valid credentials found. See the README for more details.")
+        else: raise Exception("No valid credentials found. See the README for more details.")
         
     except Exception as e:
         print(str(e))
         sys.exit(0)
         
     return plex
+
+def genCollections():
+    plex = plexConnect()
+
+    successfulMedia = []
+    failedMedia = []
+
+    if not DRY_RUN:
+        if os.path.isfile(f'../logs/plex-{TYPE}-successful.txt'):
+            with open(f'../logs/plex-{TYPE}-successful.txt') as f: successfulMedia = json.load(f)
+
+        if os.path.isfile(f'../logs/plex-{TYPE}-failures.txt'):
+            with open(f'../logs/plex-{TYPE}-failures.txt') as f: failedMedia = json.load(f)
+
+    try:
+        library = plex.library.section(LIBRARY).all()
+
+        # media counters
+        totalCount = len(library)
+        unfinishedCount = len(filter(lambda media : media.title not in successfulMedia, library))
+        finishedCount = totalCount - unfinishedCount
+
+        # estimated time "of arrival"
+        eta = ((unfinishedCount * getSleepTime(TYPE)) / 60) * 2 
+        
+        print(f'Found {totalCount} media entries under {LIBRARY} ({finishedCount}/{totalCount} completed).')
+        print(f'Estimated time to completion: {math.ceil(eta)} minutes...\n')
+
+        # i = current media's position
+        for i, media in enumerate(library, 1):
+            if media.title not in successfulMedia and media.title not in failedMedia:
+                genres = getGenres(media.title, TYPE)
+
+                if len(genres) == 0: failedMedia.append(media.title)
+
+                else:
+                    if not DRY_RUN:
+                        for genre in genres:
+                            genre = PLEX_COLLECTION_PREFIX + genre
+                            media.addCollection(genre.strip())
+
+                    successfulMedia.append(media.title)
+
+            printProgressBar(i, totalCount, prefix = 'Progress:', suffix = 'Complete', length = 50)
+
+        print(bcolors.FAIL + f'\nFailed to get genre information for {len(failedMedia)} entries.' + bcolors.ENDC + f'See logs/plex-{TYPE}-failures.txt.')
+
+    except KeyboardInterrupt: print('\n\nOperation interupted, progress has been saved.')
+
+    except Exception as e: print(str(e))
+
+    # updates the finished and failures txt
+    if not DRY_RUN:
+        if successfulMedia:
+            with open(f'../logs/plex-{TYPE}-successful.txt', 'w') as f: json.dump(successfulMedia, f)
+
+        if failedMedia:
+            with open(f'../logs/plex-{TYPE}-failures.txt', 'w') as f: json.dump(failedMedia, f)
+
+    sys.exit(0)
+
+def updatePosters():
+    postersDir = sub('[^/]*$', '', os.getcwd()) + f'/posters/{TYPE}'
+
+    if not os.path.isdir(postersDir):
+        print(bcolors.FAIL + f'Could not find poster art directory. Expected location: {postersDir}.' + bcolors.ENDC)
+        sys.exit(1)
+
+    plex = plexConnect()
+    collections = plex.library.section(LIBRARY).collection()
+
+    print('\nUploading collection artwork...')
+
+    for c in collections:
+        # remove prefix characters
+        title = sub(f'^{PLEX_COLLECTION_PREFIX}', '', c.title.lower())
+
+        # replace spaces with dashes
+        title = title.replace(' ', '-')
+
+        # path to the image
+        posterPath = f'{postersDir}/{title}.png'
+
+        if os.path.isfile(posterPath):
+            print(f'Uploading {title}...', end='\r')
+
+            c.uploadPoster(filepath=posterPath)
+
+            print(f'Uploading {title}... {bcolors.OKGREEN}done!{bcolors.ENDC}', end='\r')
+            print()
+
+        else: print (f'No poster found for collection {bcolors.WARNING}{title}{bcolors.ENDC}, expected {bcolors.WARNING}posters/{TYPE}/{title}.png{bcolors.ENDC}.')

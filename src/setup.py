@@ -47,7 +47,7 @@ def validateDotEnv(TYPE):
         print(bcolors.FAIL + 'Plex Token Auth requires PLEX_BASE_URL to be set. Please verify your .env file.' + bcolors.ENDC)
         sys.exit(1)
 
-    if bool(search('^\S+shows$|^\S+movies$', TYPE)) and not TMDB_API_KEY:
+    if search('^\S+shows$|^\S+movies$', TYPE) and not TMDB_API_KEY:
         print(bcolors.FAIL + 'TMDB_API_KEY must be set for non-anime. Please verify your .env file.' + bcolors.ENDC)
         sys.exit(1)
         
