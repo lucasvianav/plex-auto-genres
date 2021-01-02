@@ -1,3 +1,4 @@
 .env
 plex-*-finished.txt
 plex-*-failures.txt
+__pycache__/*
