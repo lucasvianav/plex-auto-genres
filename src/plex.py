@@ -26,19 +26,14 @@ validateDotEnv(TYPE)
 def plexConnect():
     print('\nConnecting to Plex...')
     
-    try:
-        if PLEX_USERNAME is not None and PLEX_PASSWORD is not None and PLEX_SERVER_NAME is not None:
-            account = MyPlexAccount(PLEX_USERNAME, PLEX_PASSWORD)
-            plex = account.resource(PLEX_SERVER_NAME).connect()
+    if PLEX_USERNAME is not None and PLEX_PASSWORD is not None and PLEX_SERVER_NAME is not None:
+        account = MyPlexAccount(PLEX_USERNAME, PLEX_PASSWORD)
+        plex = account.resource(PLEX_SERVER_NAME).connect()
 
-        elif PLEX_BASE_URL is not None and PLEX_TOKEN is not None:
-            plex = PlexServer(PLEX_BASE_URL, PLEX_TOKEN)
+    elif PLEX_BASE_URL is not None and PLEX_TOKEN is not None:
+        plex = PlexServer(PLEX_BASE_URL, PLEX_TOKEN)
 
-        else: raise Exception("No valid credentials found. See the README for more details.")
-        
-    except Exception as e:
-        print(str(e))
-        sys.exit(0)
+    else: raise Exception("No valid credentials found. See the README for more details.")
         
     return plex
 
@@ -91,20 +86,18 @@ def genCollections():
 
     except KeyboardInterrupt: print('\n\nOperation interupted, progress has been saved.')
 
-    except Exception as e: print(str(e))
-
     # updates the finished and failures txt
     if not DRY_RUN:
         if successfulMedia:
-            with open(f'../logs/plex-{TYPE}-successful.txt', 'w') as f: json.dump(successfulMedia, f)
+            with open(f'logs/plex-{TYPE}-successful.txt', 'w') as f: json.dump(successfulMedia, f)
 
         if failedMedia:
-            with open(f'../logs/plex-{TYPE}-failures.txt', 'w') as f: json.dump(failedMedia, f)
+            with open(f'logs/plex-{TYPE}-failures.txt', 'w') as f: json.dump(failedMedia, f)
 
     sys.exit(0)
 
 def updatePosters():
-    postersDir = sub('[^/]*$', '', os.getcwd()) + f'/posters/{TYPE}'
+    postersDir = os.getcwd() + f'/posters/{TYPE}'
 
     if not os.path.isdir(postersDir):
         print(bcolors.FAIL + f'Could not find poster art directory. Expected location: {postersDir}.' + bcolors.ENDC)
