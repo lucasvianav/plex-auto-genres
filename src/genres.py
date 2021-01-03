@@ -1,6 +1,7 @@
-from time import sleep
-from setup import jikan, movie, tv
 import re
+from time import sleep
+
+from src.setup import jikan, movie, tv
 
 
 def getAnimeGenres(title):

@@ -1,10 +1,8 @@
-from args import SET_POSTERS, LIBRARY
-from colors import bcolors
-from setup import TYPE, PLEX_COLLECTION_PREFIX, PLEX_SERVER_NAME, PLEX_BASE_URL
-from util import confirm
-from plex import genCollections, updatePosters
-from re import sub
-from os import getcwd
+from src.args import SET_POSTERS, LIBRARY, TYPE
+from src.colors import bcolors
+from src.setup import PLEX_COLLECTION_PREFIX, PLEX_SERVER_NAME, PLEX_BASE_URL
+from src.util import confirm
+from src.plex import genCollections, updatePosters
 
 if SET_POSTERS:
     print(f'You are about to update your {bcolors.WARNING}[{LIBRARY}]{bcolors.ENDC} collection\'s posters to any matching image titles located at {bcolors.WARNING}posters/{TYPE}/{bcolors.ENDC}.')

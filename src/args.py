@@ -1,7 +1,6 @@
 import argparse
 import sys
 
-
 example_text = '''example command:
 
  python3 main.py --library "Anime Shows" --type anime

@@ -6,12 +6,11 @@ from re import sub
 
 from plexapi.myplex import MyPlexAccount, PlexServer
 
-from args import DRY_RUN, LIBRARY, TYPE
-from colors import bcolors
-from genres import getGenres
-from plex import plexConnect
-from progress_bar import printProgressBar
-from setup import (
+from src.args import DRY_RUN, LIBRARY, TYPE
+from src.colors import bcolors
+from src.genres import getGenres
+from src.progress_bar import printProgressBar
+from src.setup import (
     PLEX_BASE_URL,
     PLEX_COLLECTION_PREFIX,
     PLEX_PASSWORD,
@@ -20,7 +19,7 @@ from setup import (
     PLEX_USERNAME,
     validateDotEnv
 )
-from util import *
+from src.util import *
 
 validateDotEnv(TYPE)
 
@@ -61,7 +60,7 @@ def genCollections():
 
         # media counters
         totalCount = len(library)
-        unfinishedCount = len(filter(lambda media : media.title not in successfulMedia, library))
+        unfinishedCount = len(list(filter(lambda media : media.title not in successfulMedia, library)))
         finishedCount = totalCount - unfinishedCount
 
         # estimated time "of arrival"
@@ -87,7 +86,8 @@ def genCollections():
 
             printProgressBar(i, totalCount, prefix = 'Progress:', suffix = 'Complete', length = 50)
 
-        print(bcolors.FAIL + f'\nFailed to get genre information for {len(failedMedia)} entries.' + bcolors.ENDC + f'See logs/plex-{TYPE}-failures.txt.')
+        if failedMedia: print(bcolors.FAIL + f'\nFailed to get genre information for {len(failedMedia)} entries. ' + bcolors.ENDC + f'See logs/plex-{TYPE}-failures.txt.')
+        else: print(bcolors.OKGREEN + '\nSuccessfully got genre information for all entries. ' + bcolors.ENDC + f'See logs/plex-{TYPE}-successful.txt.')
 
     except KeyboardInterrupt: print('\n\nOperation interupted, progress has been saved.')
 

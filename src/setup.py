@@ -1,11 +1,13 @@
 import os
-from signal import signal
-from dotenv import load_dotenv
-from tmdbv3api import TMDb, Movie, TV
-from jikanpy import Jikan
-from colors import bcolors
 import sys
+import signal
 from re import search
+
+from dotenv import load_dotenv
+from jikanpy import Jikan
+from tmdbv3api import TV, Movie, TMDb
+
+from src.colors import bcolors
 
 load_dotenv()
 
