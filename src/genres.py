@@ -32,7 +32,7 @@ def getStandardGenres(title, type):
         sleep(0.5)
 
         details = db.details(query[0].id)
-        genres = [ e['name'].split(' & ') for e in details.genres ]
+        genres = [ e['name'] for e in details.genres ]
         
         return genres
 
