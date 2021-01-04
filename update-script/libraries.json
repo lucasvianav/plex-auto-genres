@@ -1,0 +1,11 @@
+[
+    {
+        "name": "Movies",
+        "type": "mixed-movies"
+    },
+
+    {
+        "name": "TV Shows",
+        "type": "mixed-shows"
+    }
+]
