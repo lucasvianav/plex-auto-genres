@@ -1,8 +1,8 @@
-from src.args import SET_POSTERS, LIBRARY, TYPE, NO_PROMPT
+from src.args import SET_POSTERS, LIBRARY, TYPE, NO_PROMPT, SORT
 from src.colors import bcolors
 from src.setup import PLEX_COLLECTION_PREFIX, PLEX_SERVER_NAME, PLEX_BASE_URL
 from src.util import confirm
-from src.plex import genCollections, updatePosters
+from src.plex import genCollections, updatePosters, sortCollections
 
 if SET_POSTERS:
     print(f'You are about to update your {bcolors.WARNING}[{LIBRARY}]{bcolors.ENDC} collection\'s posters to any matching image titles located at {bcolors.WARNING}posters/{TYPE}/{bcolors.ENDC}.')
@@ -14,3 +14,7 @@ else:
     
     print(CONFIRMATION)
     if NO_PROMPT or confirm(): genCollections()
+
+if SORT: sortCollections()
+
+print()
