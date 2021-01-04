@@ -20,7 +20,7 @@ Plex Manage Collections is a simple script that will add genre collection tags t
 ###### mixed-movies example (1)
 ![mixed-movies collections (1)](/images/mixed-movies-collection-1.png)
 
-###### mixed-movies example (1)
+###### mixed-movies example (2)
 ![mixed-movies collections (1)](/images/mixed-movies-collection-2.png)
 
 ## Requirements
