@@ -3,3 +3,5 @@ plex-*-finished.txt
 plex-*-failures.txt
 __pycache__/*
 __pycache__/
+posters/*/*
+logs/*
