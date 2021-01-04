@@ -60,10 +60,10 @@ def genCollections(plex):
         # if the 
         if not os.path.isdir('./logs'): os.mkdir('./logs')
 
-        if os.path.isfile(f'logs/plex-{TYPE}-successful.txt'):
+        if os.path.isfile(f'logs/plex-{TYPE}-successful.txt') and os.stat(f'logs/plex-{TYPE}-successful.txt').st_size:
             with open(f'logs/plex-{TYPE}-successful.txt', 'r') as f: successfulMedia = json.load(f)
 
-        if os.path.isfile(f'logs/plex-{TYPE}-failures.txt'):
+        if os.path.isfile(f'logs/plex-{TYPE}-failures.txt') and os.stat(f'logs/plex-{TYPE}-successful.txt').st_size:
             with open(f'logs/plex-{TYPE}-failures.txt', 'r') as f: failedMedia = json.load(f)
 
     try:
