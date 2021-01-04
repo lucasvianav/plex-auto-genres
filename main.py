@@ -14,7 +14,7 @@ if GENERATE:
     if NO_PROMPT or confirm(): genCollections(plex)
 
 if SET_POSTERS:
-    print(f'You are about to update your {bcolors.WARNING}[{LIBRARY}]{bcolors.ENDC} collection\'s posters to any matching image titles located at {bcolors.WARNING}posters/{TYPE}/{bcolors.ENDC}.')
+    print(f'\nYou are about to update your {bcolors.WARNING}[{LIBRARY}]{bcolors.ENDC} collection\'s posters to any matching image titles located at {bcolors.WARNING}posters/{bcolors.ENDC}.')
     if NO_PROMPT or confirm(): updatePosters(plex)
 
 if SORT:

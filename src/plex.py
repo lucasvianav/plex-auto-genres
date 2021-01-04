@@ -99,7 +99,7 @@ def genCollections(plex):
     return
 
 def updatePosters(plex):
-    type = sub('^\S*-', '', type)
+    type = sub('^\S*-', '', TYPE)
     postersDir = os.getcwd() + f'/posters/{type}'
 
     if not os.path.isdir(postersDir):
@@ -116,20 +116,21 @@ def updatePosters(plex):
 
     for c in collections:
         # remove prefix characters and replace spaces with dashes
-        title = sub(f'^{PLEX_COLLECTION_PREFIX}', '', c.title).replace(' ', '-')
+        title = sub(f'^{PLEX_COLLECTION_PREFIX}', '', c.title)
 
         # path to the image
-        posterPath = f'{postersDir}/{title.lower()}.png'
+        if search('^\[A]-.+', title): posterPath = sub(f'{type}$', 'anime', postersDir) + '/' + sub('^\[A]-', '', title).lower().replace(' ', '-') + '.png'
+        elif search('^.*Anime$', title): posterPath = sub(f'{type}$', 'general', postersDir) + '/' + title.lower().replace(' ', '-') + '.png'
+        else: posterPath = f'{postersDir}/' + title.lower().replace(' ', '-') + '.png'
 
         if os.path.isfile(posterPath):
-            print(f'Uploading {title}...', end='\r')
+            print(f'Uploading {title}...', end = '\r')
 
-            c.uploadPoster(filepath=posterPath)
+            c.uploadPoster(filepath = posterPath)
 
-            print(f'Uploading {title}... {bcolors.OKGREEN}done!{bcolors.ENDC}', end='\r')
-            print()
+            print(f'Uploading {title}... {bcolors.OKGREEN}done!{bcolors.ENDC}')
 
-        else: print (f'No poster found for collection {bcolors.WARNING}{title}{bcolors.ENDC}, expected {bcolors.WARNING}posters/{type}/{title.lower()}.png{bcolors.ENDC}.')
+        else: print (f'No poster found for collection {bcolors.WARNING}{title}{bcolors.ENDC}, expected {bcolors.WARNING}' + sub(f'^{os.getcwd()}','',posterPath) + f'{bcolors.ENDC}.')
 
     return
 
@@ -147,16 +148,17 @@ def sortCollections(plex):
     for i, collection in enumerate(collections, 1):
         collectionItem = plex.fetchItem(collection.ratingKey)
 
-        if collectionItem.title == 'Anime': edits = {'editSort.value': '02', 'editSort.locked': 1}
-        elif collectionItem.title == 'Non-Anime': edits = {'editSort.value': '01', 'editSort.locked': 1}
-        elif search('^\[A]\s.+', collectionItem.title): edits = {'editSort.value': 'zzzzzz' + sub('^\[A]\s', '', collectionItem.title), 'editSort.locked': 1}
+        printProgressBar(i, totalCount, prefix = 'Progress:', suffix = 'Complete', length = 50)
+
+        if collectionItem.title == 'Anime': edits = {'titleSort.value': '02', 'titleSort.locked': 1}
+        elif collectionItem.title == 'Non-Anime': edits = {'titleSort.value': '01', 'titleSort.locked': 1}
+        elif search('^\[A]\s.+', collectionItem.title): edits = {'titleSort.value': 'zzzzzz' + sub('^\[A]\s', '', collectionItem.title), 'titleSort.locked': 1}
         else: continue
 
         if not DRY_RUN:
             collectionItem.edit(**edits)
             collectionItem.reload()
 
-        printProgressBar(i, totalCount, prefix = 'Progress:', suffix = 'Complete', length = 50)
 
     print(bcolors.OKGREEN + '\nSuccessfully update the collections\' sorting order.' + bcolors.ENDC)
 
