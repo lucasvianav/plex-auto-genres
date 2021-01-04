@@ -1,19 +1,11 @@
-These are sample posters I put together using a template from reddit user alexnyc1998
+You may set poster arts to your collections like the ones in sample-posters/ (inspired by reddit's [/u/alexnyc1998](https://www.reddit.com/user/alexnyc1998)).
 
-If you would like to use these sample posters simply move them to the posters/standard-movie directory and run the
-script with the --set-posters flag.
+If you wish to use the provided arts, simply rename `sample-posters/` to `posters/`.
 
-If you would like to create your own posters matching the sample posters style you can use the provided .psd file to create your own (requires Photoshop).
+If you would like to create your own posters matching the provided style, you can use the template.psd file to create your own (requires Photoshop). When setting up your own poster, organize them in a posters/ directory like the provided ones are in the sample-posters/.
 
-Names must match your collection names in plex without the PLEX_COLLECTION_PREFIX. Any spaces in the names must be replaced with dashes (-).
+The directories must match the media type (movies, shows, anime). There can be also a directory named 'general', for the 'Anime' and 'Non-Anime' collections (see the **Standard media and anime are mixed** setup option). The posters' names must match the collections' names without any prefix (either PLEX_COLLECTION_PREFIX or the '\[A\] for anime genres). The names must be completely lowercase and any spaces in it must be replaced by dashes (-).
 
-Example: 
-if you have PLEX_COLLECTION_PREFIX="*"
-Your "Action" collection in plex would be named "*Action"
-So you would title your poster art "action.png" without the "*".
-
-If your collection in plex would be named "Science Fiction" (has a space)
-you would title your poster art "science-fiction.png"
-
-The image title must match the collection title, except any spaces are replaced with dashes.
-
+Examples:
+* If you have PLEX_COLLECTION_PREFIX="\*", your "Science Fiction" collection in Plex would be named "\*Science Fiction" and your art poster should be titled "science-fiction.png";
+* Likewise, if you have a mixed media library, your anime genre "Seinen" collection in Plex would be named "\[A] Seinen" and your art poster should be titled "seinen.png" and placed in the "posters/anime/" directory;
