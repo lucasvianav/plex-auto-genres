@@ -11,11 +11,17 @@ Plex Manage Collections is a simple script that will add genre collection tags t
 7. [Troubleshooting](#troubleshooting)
 8. [Docker Usage](#docker_usage)
 
-###### Movies example (with cover art set using --set-posters flag)
-![Movie Collections](/images/movies.png)
+###### standard-movies example
+![standard-movies collections](/images/movies.png)
 
-###### Anime example
-![Anime Collections](/images/animes.png)
+###### anime example
+![anime collections](/images/animes.png)
+
+###### mixed-movies example (1)
+![mixed-movies collections (1)](/images/mixed-movies-collection-1.png)
+
+###### mixed-movies example (1)
+![mixed-movies collections (1)](/images/mixed-movies-collection-2.png)
 
 ## Requirements
 1. Python 3
@@ -83,7 +89,7 @@ It'll edit the generated collections' title sort in a way that the "type of medi
     |PLEX_COLLECTION_PREFIX||(Optional) Prefix for the created Plex collections. For example, with a value of "\*", a collection named "Adventure", the name would instead be "*Adventure".<br><br>Default value : ""|
     |TMDB_API_KEY||Your TMDB api key (not required for anime library tagging)|
 
-##You are now ready to run the script
+## You are now ready to run the script
 ```
 usage: plexmngcollections.py [-h] [-l LIBRARY]
                              [-t {anime,standard-movies,standard-shows,mixed-movies,mixed-shows}]
