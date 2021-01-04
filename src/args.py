@@ -48,7 +48,7 @@ GENERATE = args.generate_collections
 SORT = args.sort
 SET_POSTERS = args.set_posters
 
-if not GENERATE or not SORT or not SET_POSTERS:
+if not GENERATE and not SORT and not SET_POSTERS:
     print(f'\n{bcolors.FAIL}At least one action parameter ({bcolors.BOLD}-g{bcolors.ENDC}{bcolors.FAIL}, {bcolors.BOLD}-p{bcolors.ENDC}{bcolors.FAIL} or {bcolors.BOLD}-s{bcolors.ENDC}{bcolors.FAIL}) is required.\n{bcolors.ENDC}')
     sys.exit(1)
 
