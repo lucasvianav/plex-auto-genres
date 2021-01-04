@@ -57,6 +57,9 @@ def genCollections(plex):
 
     # if it's not a dry-run, gets progress from the logs
     if not DRY_RUN:
+        # if the 
+        if not os.path.isdir('./logs'): os.mkdir('./logs')
+
         if os.path.isfile(f'logs/plex-{TYPE}-successful.txt'):
             with open(f'logs/plex-{TYPE}-successful.txt', 'r') as f: successfulMedia = json.load(f)
 
