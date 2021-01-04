@@ -2,6 +2,7 @@ import re
 from time import sleep
 
 from src.setup import jikan, movie, tv
+from src.util import isAnime
 
 
 def getAnimeGenres(title):
@@ -22,7 +23,7 @@ def getAnimeGenres(title):
 
 def getStandardGenres(title, type):
     try:
-        db = movie if re.search('^\S+movies$', type) else tv
+        db = movie if re.search('^\S*movies$', type) else tv
 
         sleep(0.5)
 
@@ -32,7 +33,7 @@ def getStandardGenres(title, type):
         sleep(0.5)
 
         details = db.details(query[0].id)
-        genres = [ e['name'] for e in details.genres ]
+        genres = [ y[0] for y in [x['name'].split(' & ') for x in details.genres] ]
         
         return genres
 
@@ -42,4 +43,13 @@ def getStandardGenres(title, type):
         
         return []
 
-def getGenres(title, type): return getAnimeGenres(title) if type == 'anime' else getStandardGenres(title, type)
+def getGenres(media, type):
+    if type == 'anime' or ('mixed-' in type and isAnime(media)):
+        genres = getAnimeGenres(media.title)
+        if 'mixed-' in type: genres = list(map(lambda e: '[A] ' + e, genres)) + ['Anime']
+
+    else: 
+        genres = getStandardGenres(media.title, type)
+        if 'mixed-' in type: genres = genres + ['Non-Anime']
+
+    return genres
