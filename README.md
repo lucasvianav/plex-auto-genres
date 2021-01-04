@@ -1,42 +1,84 @@
-# Plex Auto Genres
+# Plex Manage Collections
 
-Plex Auto Genres is a simple script that will add genre collection tags to your media making it much easier to search for genre specific content
+Plex Manage Collections is a simple script that will add genre collection tags to your media making it much easier to search for genre specific content.
 
 1. [Requirements](#requirements)
-2. [Optimal Setup](#optimal)
-3. [Getting Started](#getting_started)
-4. [Troubleshooting](#troubleshooting)
-5. [Docker Usage](#docker_usage)
+2. [Compatible Setups](#compatible)
+3. [Optional Features](#optional)
+4. [Getting Started](#getting_started)
+5. [Credits](#credits)
+6. [Auto-Run Whenever New Media Are Added](#tautulli)
+7. [Troubleshooting](#troubleshooting)
+8. [Docker Usage](#docker_usage)
 
-###### Movies example (with cover art set using --set-posters flag)
-![Movie Collections](/images/movies.png)
+###### standard-movies example
+![standard-movies collections](/images/movies.png)
 
-###### Anime example
-![Anime Collections](/images/animes.png)
+###### anime example
+![anime collections](/images/animes.png)
+
+###### mixed-movies example (1)
+![mixed-movies collections (1)](/images/mixed-movies-collection-1.png)
+
+###### mixed-movies example (2)
+![mixed-movies collections (1)](/images/mixed-movies-collection-2.png)
 
 ## Requirements
 1. Python 3
-2. [TMDB Api Key](https://developers.themoviedb.org/3/getting-started/introduction) (Only required for non-anime libraries)
+3. Python dependencies listed in `requirements.txt` (if you have pip, simply do `pip install -r requirements.txt`).
+3. [TMDB Api Key](https://developers.themoviedb.org/3/getting-started/introduction) (Only required for non-anime media)
 
-## <a id="optimal"></a>Optimal Setup
+## <a id="compatible"></a>Compatible Setups
 
-1. Anime / Anime Movies are in their own library on your plex server. **_(Anime and Anime Movies can share the same library)_**
+For either setup, proper titles for your media are necessary. This makes it easier to find the media (see https://support.plex.tv/articles/naming-and-organizing-your-tv-show-files/).
+
+### Standard media and anime are separated
+1. Anime shows and movies are in their own library on your plex server. **_(Anime shows and movies can share the same library)_**
 2. Standard TV Shows are in their own library on your plex server.
 3. Standard Movies are in their own library on your plex server.
-4. Proper titles for your media, this makes it easier to find the media. (see https://support.plex.tv/articles/naming-and-organizing-your-tv-show-files/)
 
-For this to work well your plex library should be sorted. Meaning standard and non-standard media should not be in the same Plex library. Anime is an example of non-standard media.
+In this setup, the script'll simply create genres collections for your media in each library (also with anime-specific genres for the anime libraries).
 
-If your anime shows and standard tv shows are in the same library, you can still use this script just choose (**standard**) as the type. However, doing this could cause incorrect genres added to some or all of your anime media entries.
+###### Note: this setup works well with [ZeroQI](https://github.com/ZeroQI)'s [Absolute Series Scanner (ASS)](https://github.com/ZeroQI/Absolute-Series-Scanner) and [Hama.bundle agent](https://github.com/ZeroQI/Hama.bundle).
 
-###### Here is an example of my plex library setup
-![Plex Library Example](/images/example-library-setup.png)
+### Standard media and anime are mixed
+1. Anime and standard TV shows share their own library on your plex server.
+2. Anime and standard movies share their own library on your plex server.
+
+In this setup, the script'll create three types of collections:
+* Type of media: "Non-Anime" and "Anime" collections
+* Standard genres: contain only standard media
+* Anime genres: contain only anime and the collections' names are preceded by "\[A\]"
+
+## <a id="optional"></a>Optional Features
+### Set posters
+You may set poster arts to your collections like the ones in sample-posters/ (inspired by reddit's [/u/alexnyc1998](https://www.reddit.com/user/alexnyc1998)).
+
+If you wish to use the provided arts, simply rename `sample-posters/` to `posters/`.
+
+If you would like to create your own posters matching the provided style, you can use the template.psd file to create your own (requires Photoshop). When setting up your own poster, organize them in a posters/ directory like the provided ones are in the sample-posters/.
+
+The directories must match the media type (movies, shows, anime). There can be also a directory titled "general", for the "Anime" and "Non-Anime" collections (see the **Standard media and anime are mixed** setup option). The posters' names must match the collections' names without any prefix (either PLEX_COLLECTION_PREFIX or the "\[A\]" for anime genres). The names must be completely lowercase and any spaces in it must be replaced by dashes (-).
+
+Examples:
+* If you have PLEX_COLLECTION_PREFIX="\*", your "Science Fiction" collection in Plex would be named "\*Science Fiction" and your art poster should be titled "science-fiction.png";
+* Likewise, if you have a mixed-media library, your anime genre "Seinen" collection in Plex would be named "\[A] Seinen" and your art poster should be titled "seinen.png" and placed in the "posters/anime/" directory;
+
+### Sort collections
+This feature is only available to mixed-media libraries (see the **Standard media and anime are mixed** setup option).
+
+It'll edit the generated collections' title sort in a way that the "type of media" collections will be at the top and all of the anime genres' collections will be at the bottom.
+* Non-Anime's title sort --> "01"
+* Anime's title sort --> "02"
+* \[A\] \*'s title sort --> "zzzzzz\<ORIGINAL GENRE NAME\>"
+    
+*e.g.*: \[A\] Sci-Fi's title sort will be set to "zzzzzzSci-Fi".
 
 ## <a id="getting_started"></a>Getting Started 
-1. Read the **Optimal Setup** section above
-2. Install the python dependencies listed in `requirements.txt`, if you have pip you can simply do `pip install -r requirements.txt`
-3. Rename the `.env.example` file to `.env`
-4. Edit the `.env` file and set your plex username, password, and server name. If you are generating collections for standard media (non anime) you will need to also obtain an [TMDB Api Key](https://developers.themoviedb.org/3/getting-started/introduction) (for movies and tv shows) 
+1. Read the **Requirements** and **Compatible Setups** sections above
+2. Rename the `.env.example` file to `.env`
+3 Edit the `.env` file and set your plex username, password, and server name or plex base url and auth token. If you are generating collections for standard media, you'll also need to set your [TMDB Api Key](https://developers.themoviedb.org/3/getting-started/introduction).
+
     |Variable|Authentication method|Value|
     |---|---|---|
     |PLEX_USERNAME|Username and password|Your Plex Username|
@@ -46,36 +88,69 @@ If your anime shows and standard tv shows are in the same library, you can still
     |PLEX_TOKEN|Token|Your Plex Token|
     |PLEX_COLLECTION_PREFIX||(Optional) Prefix for the created Plex collections. For example, with a value of "\*", a collection named "Adventure", the name would instead be "*Adventure".<br><br>Default value : ""|
     |TMDB_API_KEY||Your TMDB api key (not required for anime library tagging)|
-5. Optional, If you want to update the poster art of your collections. See `sample_posters/readme.txt`
 
-You are now ready to run the script
+## You are now ready to run the script
 ```
-usage: plex-auto-genres.py [-h] [--library LIBRARY] [--type {anime,standard}]
+usage: plexmngcollections.py [-h] [-l LIBRARY]
+                             [-t {anime,standard-movies,standard-shows,mixed-movies,mixed-shows}]
+                             [-p] [-g] [-s] [-n] [-y] [-f]
 
-Adds genre tags (collections) to your Plex media.
+Adds collection genre tags to your Plex media as well as helps you manage it.
 
 optional arguments:
   -h, --help            show this help message and exit
-  --library LIBRARY     The exact name of the Plex library to generate genre collections for.
-  --type {anime,standard-movie,standard-tv}
-                        The type of media contained in the library
-  --set-posters         uploads posters located in posters/<type> of matching collections. Supports (.PNG)
-  --dry                 Do not modify plex collections (debugging feature)
+  
+  -l, --library LIBRARY
+                        The exact name of the Plex library to generate genre
+                        collections for.
+                        
+  -t, --type {anime,standard-movies,standard-shows,mixed-movies,mixed-shows}
+                        The type of media contained in the library. Mixed
+                        libraries contain both standard media and anime ('Non-
+                        Anime' and 'Anime' collections will be generated and
+                        anime's genre collections will be preceded by '[A]').
+                        
+  -p, --set-posters     Uploads posters located in posters/$media-type - media-
+                        type {anime, movies, shows}. Supports .PNG
+                        
+  -g, --generate-collections
+                        Generate genre collections for the selected media.
+                        
+  -s, --sort            Only applies to mixed libraries. Updates the
+                        collections' sorting titles so that 'Non-Anime' and
+                        'Anime' will be the first collections and the anime
+                        genres' collections will be the last.
+                        
+  -n, --nono, -d, --dry
+                        Do not modify plex collections (debugging feature).
+                        
+  -y, --yes             Do not prompt.
+  
+  -f, --force           Force proccess on all media (independently of proggress
+                        recorded in logs/).
 
-example: 
-python plex-auto-genres.py --library "Anime Movies" --type anime
-python plex-auto-genres.py --library "Anime Shows" --type anime
-python plex-auto-genres.py --library Movies --type standard-movie
-python plex-auto-genres.py --library "TV Shows" --type standard-tv
-python plex-auto-genres.py --library Movies --type standard-movie --set-posters
+examples: 
+python3 plexmngcollections.py -l "Anime Movies" -t anime --generate-collections
+python3 plexmngcollections.py -l "Anime Shows" -t anime --generate-collections --set-posters
+python3 plexmngcollections.py -l Movies -t standard-movies --generate-collections --set-posters
+python3 plexmngcollections.py -l "TV Shows" -t standard-shows --set-posters
+
+python3 plexmngcollections.py -l Movies -t mixed-movies --generate-collections --set-posters --sort
+python3 plexmngcollections.py -l "TV Shows" -t mixed-shows --generate-collections --set-posters --sort
 ```
 
 ![Example Usage](/images/example-usage.gif)
 
-## Troubleshooting
-1. If you are not seeing any new collections close your plex client and re-open it.
-2. Delete the generated `plex-*-finished.txt`  and `plex-*-failures.txt` files if you want the script to generate collections from the beginning. You may want to do this if you delete your collections and need them re-created.
+## <a id="tautulli"></a>Auto-Run Whenever New Media Are Added
+
+
+## <a id="credits"></a>Credits
+This script is a fork from [ShaneIsrael](https://github.com/ShaneIsrael)'s [Plex Auto Genres](https://github.com/ShaneIsrael/plex-auto-genres), which works great for the **Standard media and anime are separated** setup option. I've only done some cleanup/modularization and made it compatible with the **Standard media and anime are mixed** setup option (as it is the one I use) and the Tautulli trigger.
+
+## <a id="troubleshooting"></a>Troubleshooting
+1. If you are not seeing any new collections or updates in posters and sorting, try to realod your Plex client or to close it and re-open it.
+2. Delete the generated `logs/plex-*-successful.txt`  and `logs/plex-*-failures.txt` files if you want the script to generate collections from scratch. You may want to do this if you delete your collections and need them re-created. Another option is to use the `-f, --force` flag.
 3. Having the release year in the title of a tv show or movie can cause the lookup to fail in some instances. For example `Battlestar Galactica (2003)` will fail, but `Battlestar Galactica` will not.
 
 ## <a id="docker_usage"></a>Docker Usage
-If you would like to run this via a docker container somebody has made that possible. [Follow their instructions here](https://github.com/fdarveau/plex-auto-genres-docker)
+Unfortunately, this fork isn't available to run this via a Docker Container, but the original script is, see [fdarveau](https://github.com/fdarveau) [Plex Auto Genres Docker](https://github.com/fdarveau/plex-auto-genres-docker).
