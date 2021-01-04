@@ -1,4 +1,4 @@
-jikanpy
-plexapi
-python-dotenv
-tmdbv3api
+PlexAPI==4.2.0
+jikanpy==4.2.2
+tmdbv3api==1.7.2
+python-dotenv==0.15.0

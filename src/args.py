@@ -5,7 +5,7 @@ import os
 from src.colors import bcolors
 
 example_text = '\nexample command: ' + bcolors.BOLD +  'python3 main.py --library "Anime Shows" --type anime' + bcolors.ENDC
-parser = argparse.ArgumentParser(description='Adds genre tags (collections) to your Plex media.', epilog = example_text)
+parser = argparse.ArgumentParser(description='Adds collection genre tags to your Plex media as well as helps you manage it.', epilog = example_text)
 
 parser.add_argument(
     '-l', '--library', action='store', dest='library', nargs=1, 
