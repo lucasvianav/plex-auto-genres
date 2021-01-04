@@ -36,9 +36,7 @@ def plexConnect():
         
     return plex
 
-def genCollections():
-    plex = plexConnect()
-
+def genCollections(plex):
     successfulMedia = []
     failedMedia = []
 
@@ -100,7 +98,7 @@ def genCollections():
 
     return
 
-def updatePosters():
+def updatePosters(plex):
     type = sub('^\S*-', '', type)
     postersDir = os.getcwd() + f'/posters/{type}'
 
@@ -108,7 +106,6 @@ def updatePosters():
         print(bcolors.FAIL + f'Could not find poster art directory. Expected location: {postersDir}.' + bcolors.ENDC)
         return
 
-    plex = plexConnect()
     collections = plex.library.section(LIBRARY).collection()
 
     if not collections:
@@ -136,8 +133,7 @@ def updatePosters():
 
     return
 
-def sortCollections():
-    plex = plexConnect()
+def sortCollections(plex):
     collections = plex.library.section(LIBRARY).collection()
 
     if not collections:
