@@ -23,23 +23,39 @@ from src.util import *
 validateDotEnv(TYPE)
 
 def plexConnect():
-    print('\nConnecting to Plex...')
+    print(bcolors.OKBLUE + '\nConnecting to Plex...' + bcolors.ENDC, end = ' ')
     
+    # Checks username, password and server name
     if PLEX_USERNAME is not None and PLEX_PASSWORD is not None and PLEX_SERVER_NAME is not None:
-        account = MyPlexAccount(PLEX_USERNAME, PLEX_PASSWORD)
-        plex = account.resource(PLEX_SERVER_NAME).connect()
+        try:
+            account = MyPlexAccount(PLEX_USERNAME, PLEX_PASSWORD)
+            plex = account.resource(PLEX_SERVER_NAME).connect()
 
+        except Exception as e:
+            raise Exception(f'{bcolors.FAIL}failed!{bcolors.ENDC} {bcolors.WARNING}See error:{bcolors.ENDC} {e}')
+
+        else:
+            print(f'{bcolors.OKGREEN}done!{bcolors.ENDC}')
+
+    # Alternatively, checks base url and plex auth token
     elif PLEX_BASE_URL is not None and PLEX_TOKEN is not None:
-        plex = PlexServer(PLEX_BASE_URL, PLEX_TOKEN)
+        try: plex = PlexServer(PLEX_BASE_URL, PLEX_TOKEN)
+        
+        except Exception as e:
+            raise Exception(f'{bcolors.FAIL}failed!{bcolors.ENDC} {bcolors.WARNING}See error:{bcolors.ENDC} {e}')
 
-    else: raise Exception("No valid credentials found. See the README for more details.")
+        else:
+            print(f'{bcolors.OKGREEN}done!{bcolors.ENDC}')
+
+    else: raise Exception(f"{bcolors.FAIL}failed!{bcolors.ENDC} {bcolors.WARNING}No valid credentials found.{bcolors.ENDC} See the README for more details.")
         
     return plex
 
 def genCollections(plex):
-    successfulMedia = []
-    failedMedia = []
+    successfulMedia = [] # media which's collections were successfully edited
+    failedMedia = [] # media which's collections couldn't be edited
 
+    # if it's not a dry-run, gets progress from the logs
     if not DRY_RUN:
         if os.path.isfile(f'logs/plex-{TYPE}-successful.txt'):
             with open(f'logs/plex-{TYPE}-successful.txt', 'r') as f: successfulMedia = json.load(f)
@@ -48,18 +64,20 @@ def genCollections(plex):
             with open(f'logs/plex-{TYPE}-failures.txt', 'r') as f: failedMedia = json.load(f)
 
     try:
+        # plex library
         library = plex.library.section(LIBRARY).all()
 
         # media counters
         totalCount = len(library)
-        unfinishedCount = len(list(filter(lambda media : media.title not in successfulMedia and media.title not in failedMedia, library)))
+        unfinishedCount = len(list(filter(lambda media: f'{media.title} ({media.year})' not in successfulMedia and f'{media.title} ({media.year})' not in failedMedia, library)))
         finishedCount = totalCount - unfinishedCount
 
         # estimated time "of arrival"
         eta = ((unfinishedCount * getSleepTime(TYPE)) / 60) * 2
 
+        # if it's a mixed type, corrects the ETA
         if 'mixed-' in TYPE: 
-            animeCount = len(list(filter(lambda media : media.title not in successfulMedia and isAnime(media), library)))
+            animeCount = len(list(filter(lambda media : f'{media.title} ({media.year})' not in successfulMedia and f'{media.title} ({media.year})' not in failedMedia and isAnime(media), library)))
             nonAnimeCount = unfinishedCount - animeCount
             eta = ((animeCount * getSleepTime('anime') + nonAnimeCount * getSleepTime(TYPE)) / 60) * 2
         
@@ -68,10 +86,12 @@ def genCollections(plex):
 
         # i = current media's position
         for i, media in enumerate(library, 1):
-            if media.title not in successfulMedia and media.title not in failedMedia:
+            mediaIdentifier = f'{media.title} ({media.year})'
+
+            if mediaIdentifier not in successfulMedia and mediaIdentifier not in failedMedia:
                 genres = getGenres(media, TYPE)
 
-                if len(genres) == 0: failedMedia.append(media.title)
+                if not genres: failedMedia.append(mediaIdentifier)
 
                 else:
                     if not DRY_RUN:
@@ -79,7 +99,7 @@ def genCollections(plex):
                             genre = PLEX_COLLECTION_PREFIX + genre
                             media.addCollection(genre)
 
-                    successfulMedia.append(media.title)
+                    successfulMedia.append(mediaIdentifier)
 
             printProgressBar(i, totalCount, prefix = 'Progress:', suffix = 'Complete', length = 50)
 
@@ -99,15 +119,17 @@ def genCollections(plex):
     return
 
 def updatePosters(plex):
-    type = sub('^\S*-', '', TYPE)
-    postersDir = os.getcwd() + f'/posters/{type}'
+    type = sub('^\S*-', '', TYPE) # standard-movies or mixed-movies --> movies (same for shows)
+    postersDir = os.getcwd() + f'/posters/{type}' # complete path to the posters directory
 
+    # if there is no posters/ directory
     if not os.path.isdir(postersDir):
         print(bcolors.FAIL + f'Could not find poster art directory. Expected location: {postersDir}.' + bcolors.ENDC)
         return
 
     collections = plex.library.section(LIBRARY).collection()
 
+    # if there are no collections (same as len(collections) == 0)
     if not collections:
         print(bcolors.FAIL + f'Could not find any Plex collections.' + bcolors.ENDC)
         return
@@ -119,17 +141,22 @@ def updatePosters(plex):
         title = sub(f'^{PLEX_COLLECTION_PREFIX}', '', c.title)
 
         # path to the image
-        if search('^\[A]-.+', title): posterPath = sub(f'{type}$', 'anime', postersDir) + '/' + sub('^\[A]-', '', title).lower().replace(' ', '-') + '.png'
-        elif search('^.*Anime$', title): posterPath = sub(f'{type}$', 'general', postersDir) + '/' + title.lower().replace(' ', '-') + '.png'
-        else: posterPath = f'{postersDir}/' + title.lower().replace(' ', '-') + '.png'
+        posterPath = f'{postersDir}/' + title.lower().replace(' ', '-') + '.png'
 
+        # if it's a mixed library, look for the anime genre collections ('[A] ...') and the Anime and Non-Anime collections
+        if 'mixed-' in TYPE:
+            if search('^\[A]-.+', title): posterPath = sub(f'{type}$', 'anime', postersDir) + '/' + sub('^\[A]-', '', title).lower().replace(' ', '-') + '.png'
+            elif search('^.*Anime$', title): posterPath = sub(f'{type}$', 'general', postersDir) + '/' + title.lower().replace(' ', '-') + '.png'
+
+        # If the poster exists, upload it
         if os.path.isfile(posterPath):
-            print(f'Uploading {title}...', end = '\r')
+            print(f'Uploading {title}...', end = ' ')
+            
+            try: c.uploadPoster(filepath = posterPath)
+            except Exception as e: print(f'{bcolors.FAIL}failed!{bcolors.ENDC} {bcolors.WARNING}See error:{bcolors.ENDC}{e}')
+            else: print(f'{bcolors.OKGREEN}done!{bcolors.ENDC}')
 
-            c.uploadPoster(filepath = posterPath)
-
-            print(f'Uploading {title}... {bcolors.OKGREEN}done!{bcolors.ENDC}')
-
+        # If it doesn't, print 404
         else: print (f'No poster found for collection {bcolors.WARNING}{title}{bcolors.ENDC}, expected {bcolors.WARNING}' + sub(f'^{os.getcwd()}','',posterPath) + f'{bcolors.ENDC}.')
 
     return
