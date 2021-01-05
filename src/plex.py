@@ -26,7 +26,7 @@ def plexConnect():
     print(bcolors.OKBLUE + '\nConnecting to Plex...' + bcolors.ENDC, end = ' ')
     
     # Checks username, password and server name
-    if PLEX_USERNAME is not None and PLEX_PASSWORD is not None and PLEX_SERVER_NAME is not None:
+    if PLEX_USERNAME and PLEX_PASSWORD and PLEX_SERVER_NAME:
         try:
             account = MyPlexAccount(PLEX_USERNAME, PLEX_PASSWORD)
             plex = account.resource(PLEX_SERVER_NAME).connect()
@@ -38,7 +38,7 @@ def plexConnect():
             print(f'{bcolors.OKGREEN}done!{bcolors.ENDC}')
 
     # Alternatively, checks base url and plex auth token
-    elif PLEX_BASE_URL is not None and PLEX_TOKEN is not None:
+    elif PLEX_BASE_URL and PLEX_TOKEN:
         try: plex = PlexServer(PLEX_BASE_URL, PLEX_TOKEN)
         
         except Exception as e:

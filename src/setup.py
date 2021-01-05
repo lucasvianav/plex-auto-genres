@@ -41,11 +41,11 @@ def validateDotEnv(TYPE):
         print(bcolors.FAIL + 'PLEX_PASSWORD is missing or not set. Please verify your .env file.' + bcolors.ENDC)
         sys.exit(1)
 
-    if (not PLEX_SERVER_NAME) and (not PLEX_TOKEN):
+    if not PLEX_SERVER_NAME and not PLEX_TOKEN:
         print(bcolors.FAIL + 'PLEX_SERVER_NAME is missing or not set. Please verify your .env file.' + bcolors.ENDC)
         sys.exit(1)
 
-    if PLEX_TOKEN and not PLEX_BASE_URL:
+    if PLEX_TOKEN and not PLEX_BASE_URL and not PLEX_USERNAME and not PLEX_PASSWORD and not PLEX_SERVER_NAME:
         print(bcolors.FAIL + 'Plex Token Auth requires PLEX_BASE_URL to be set. Please verify your .env file.' + bcolors.ENDC)
         sys.exit(1)
 
