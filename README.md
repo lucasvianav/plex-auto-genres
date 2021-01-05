@@ -142,7 +142,7 @@ python3 plexmngcollections.py -l "TV Shows" -t mixed-shows --generate-collection
 
 ![Example Usage](/images/example-usage.gif)
 
-## <a id="tautulli"></a>Auto-Run Whenever There's New Media
+## <a id="tautulli"></a>Auto-Run Whenever There's New Media (not working yet :c)
 If you wish run this script every time a new media is added to server, I suggest you use \[Tautulli\](https://github.com/Tautulli/Tautulli)'s very useful [script notification agent](https://github.com/Tautulli/Tautulli-Wiki/wiki/Custom-Scripts). I've implemented an `update.py` script that you may use, but you also can implement your own, as Tautulli support many file types: `.bat, .cmd, .php, .pl, .ps1, .py, .pyw, .rb, .sh`.
 
 The provided provided update script will simply run `python3 plexmngcollections.py -l <LIBRARY> -t <TYPE> -g -s -y` on all libraries specified. In order to use it, follow the instructions below:
