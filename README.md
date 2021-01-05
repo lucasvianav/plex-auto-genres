@@ -7,7 +7,7 @@ Plex Manage Collections is a simple script that will add genre collection tags t
 3. [Optional Features](#optional)
 4. [Getting Started](#getting_started)
 5. [Credits](#credits)
-6. [Auto-Run Whenever New Media Are Added](#tautulli)
+6. [Auto-Run Whenever There's New Media](#tautulli)
 7. [Troubleshooting](#troubleshooting)
 8. [Docker Usage](#docker_usage)
 
@@ -141,8 +141,21 @@ python3 plexmngcollections.py -l "TV Shows" -t mixed-shows --generate-collection
 
 ![Example Usage](/images/example-usage.gif)
 
-## <a id="tautulli"></a>Auto-Run Whenever New Media Are Added
+## <a id="tautulli"></a>Auto-Run Whenever There's New Media
+If you wish run this script every time a new media is added to server, I suggest you use \[Tautulli\](https://github.com/Tautulli/Tautulli)'s very useful [script notification agent](https://github.com/Tautulli/Tautulli-Wiki/wiki/Custom-Scripts). I've implemented an `update.py` script that you may use, but you also can implement your own, as Tautulli support many file types: `.bat, .cmd, .php, .pl, .ps1, .py, .pyw, .rb, .sh`.
 
+The provided provided update script will simply run `python3 plexmngcollections.py -l \<LIBRARY\> -t \<TYPE\> -g -s -y` on all libraries specified. In order to use it, follow the instructions below:
+1. Go to the `update-script/` directory
+2. Rename `libraries.json.example` to `libraries.json`
+3. Following the template, edit `libraries.json` and list all the libraries you want the script to run on, as well as it's corresponding types
+4. On your Tautulli page, go to Settings > Notification Agents > Add a new notification agent > Script
+5. On the "Script Folder" fuekd, select the full path to `plex-manage-collections/update-script`
+6. Likewise, on the "Script File" field, select `update.py`
+7. On the "Triggers" tab, select the "Recently Added" trigger
+8. Set any other settings as you wish and finally hit "Save"
+
+![Tautulli Trigger Setup (1)](/images/tautulli-trigger-1.png)
+![Tautulli Trigger Setup (2)](/images/tautulli-trigger-2.png)
 
 ## <a id="credits"></a>Credits
 This script is a fork from [ShaneIsrael](https://github.com/ShaneIsrael)'s [Plex Auto Genres](https://github.com/ShaneIsrael/plex-auto-genres), which works great for the **Standard media and anime are separated** setup option. I've only done some cleanup/modularization and made it compatible with the **Standard media and anime are mixed** setup option (as it is the one I use) and the Tautulli trigger.
