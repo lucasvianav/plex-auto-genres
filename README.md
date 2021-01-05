@@ -77,7 +77,8 @@ It'll edit the generated collections' title sort in a way that the "type of medi
 ## <a id="getting_started"></a>Getting Started 
 1. Read the **Requirements** and **Compatible Setups** sections above
 2. Rename the `.env.example` file to `.env`
-3 Edit the `.env` file and set your plex username, password, and server name or plex base url and auth token. If you are generating collections for standard media, you'll also need to set your [TMDB Api Key](https://developers.themoviedb.org/3/getting-started/introduction).
+3. Edit the `.env` file and set your plex username, password, and server name or plex base url and auth token.
+4. If you are generating collections for standard media, you'll also need to set your [TMDB Api Key](https://developers.themoviedb.org/3/getting-started/introduction) on the `.env` file.
 
     |Variable|Authentication method|Value|
     |---|---|---|
