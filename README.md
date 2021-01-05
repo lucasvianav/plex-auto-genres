@@ -142,7 +142,7 @@ python3 plexmngcollections.py -l "TV Shows" -t mixed-shows --generate-collection
 
 ![Example Usage](/images/example-usage.gif)
 
-## <a id="tautulli"></a>Auto-Run Whenever There's New Media (not working yet :c)
+## <a id="tautulli"></a>Auto-Run Whenever There's New Media
 If you wish run this script every time a new media is added to server, I suggest you use \[Tautulli\](https://github.com/Tautulli/Tautulli)'s very useful [script notification agent](https://github.com/Tautulli/Tautulli-Wiki/wiki/Custom-Scripts). I've implemented an `update.py` script that you may use, but you also can implement your own, as Tautulli support many file types: `.bat, .cmd, .php, .pl, .ps1, .py, .pyw, .rb, .sh`.
 
 The provided provided update script will simply run `python3 plexmngcollections.py -l <LIBRARY> -t <TYPE> -g -s -y` on all libraries specified. In order to use it, follow the instructions below:
@@ -155,16 +155,26 @@ The provided provided update script will simply run `python3 plexmngcollections.
 7. On the "Triggers" tab, select the "Recently Added" trigger
 8. Set any other settings as you wish and finally hit "Save"
 
+<a id="tautulli-bug"></a>
+I recommend you test the notification (select the `./update.py` on the "Test Notifications" tab and test it) and check the Tautulli logs to see the script's output. You may run into the following error: `ModuleNotFoundError: No module named 'dotenv'`. If so, you'll need to execute a few more steps:
+9. Install the required modules on the `plex-managecollections/` directory (using pip, you can execute `pip3 install --target=path/to/plex-manage-collections/ -r path/to/plex-manage-collections/requirements.txt`)
+10. If you the same error persists, install again specifically the not found module (I had to do it to "idna_ssl": `pip3 install --upgrade --target=path/to/plex-manage-collections/ idna_ssl`)
+11. Change the `plex-manage-collections` directory's permission in order for the user running Tautulli will be able to read, write and execute files inside it (in my case, I simply ran `chmod -R 777 path/to/plex-manage-collections/` so that any user will have rwx permissons)
+
+###### Note: The `update.py` script'll only generate and sort the collections, but no update their posters (you'll have to do it manually). If you want it to set posters everytime it runs, simply swap the script's 6th line from `for lib in libraries: os.system(f'cd ..; python3 plexmngcollections.py -l {lib["name"]} -t {lib["type"]} -g -s -y')` to `for lib in libraries: os.system(f'cd ..; python3 plexmngcollections.py -l {lib["name"]} -t {lib["type"]} -g -s -y -p')`
+
 ![Tautulli Trigger Setup (1)](/images/tautulli-trigger-1.png)
 ![Tautulli Trigger Setup (2)](/images/tautulli-trigger-2.png)
 
 ## <a id="credits"></a>Credits
 This script is a fork from [ShaneIsrael](https://github.com/ShaneIsrael)'s [Plex Auto Genres](https://github.com/ShaneIsrael/plex-auto-genres), which works great for the **Standard media and anime are separated** setup option. I've only done some cleanup/modularization and made it compatible with the **Standard media and anime are mixed** setup option (as it is the one I use) and the Tautulli trigger.
 
+I'd also like to thanks reddit's [/u/SwiftPanda16](https://www.reddit.com/user/SwiftPanda16/) for helping me setup Tautulli to trigger the script (see the [Auto-Run Whenever There's New Media](#tautulli) section)
+
 ## <a id="troubleshooting"></a>Troubleshooting
 1. If you are not seeing any new collections or updates in posters and sorting, try to realod your Plex client or to close it and re-open it.
 2. Delete the generated `logs/plex-*-successful.txt`  and `logs/plex-*-failures.txt` files if you want the script to generate collections from scratch. You may want to do this if you delete your collections and need them re-created. Another option is to use the `-f, --force` flag.
-3. Having the release year in the title of a tv show or movie can cause the lookup to fail in some instances. For example `Battlestar Galactica (2003)` will fail, but `Battlestar Galactica` will not.
+3. If you run into a "ModuleNotFound" error when setting up the Tautulli script trigger, check what to do in the [Auto-Run Whenever There's New Media](#tautulli-bug) section. For more information, you can also [read this reddit post](https://www.reddit.com/r/Tautulli/comments/kqnul1/please_help_unexpected_modulenotfounderror_in/).
 
 ## <a id="docker_usage"></a>Docker Usage
 Unfortunately, this fork isn't available to run this via a Docker Container, but the original script is, see [fdarveau](https://github.com/fdarveau) [Plex Auto Genres Docker](https://github.com/fdarveau/plex-auto-genres-docker).
