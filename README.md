@@ -175,7 +175,8 @@ I'd also like to thanks reddit's [/u/SwiftPanda16](https://www.reddit.com/user/S
 ## <a id="troubleshooting"></a>Troubleshooting
 1. If you are not seeing any new collections or updates in posters and sorting, try to realod your Plex client or to close it and re-open it.
 2. Delete the generated `logs/plex-*-successful.txt`  and `logs/plex-*-failures.txt` files if you want the script to generate collections from scratch. You may want to do this if you delete your collections and need them re-created. Another option is to use the `-f, --force` flag.
-3. If you run into a "ModuleNotFound" error when setting up the Tautulli script trigger, check what to do in the [Auto-Run Whenever There's New Media](#tautulli-bug) section. For more information, you can also [read this reddit post](https://www.reddit.com/r/Tautulli/comments/kqnul1/please_help_unexpected_modulenotfounderror_in/).
+3. Having the release year in the title of a show or movie can cause the lookup to fail in some instances. For example Battlestar Galactica (2003) will fail, but Battlestar Galactica will not.
+4. If you run into a "ModuleNotFound" error when setting up the Tautulli script trigger, check what to do in the [Auto-Run Whenever There's New Media](#tautulli-bug) section. For more information, you can also [read this reddit post](https://www.reddit.com/r/Tautulli/comments/kqnul1/please_help_unexpected_modulenotfounderror_in/).
 
 ## <a id="docker_usage"></a>Docker Usage
 Unfortunately, this fork isn't available to run this via a Docker Container, but the original script is, see [fdarveau](https://github.com/fdarveau) [Plex Auto Genres Docker](https://github.com/fdarveau/plex-auto-genres-docker).
