@@ -148,7 +148,7 @@ def updatePosters(plex):
 
         # if it's a mixed library, look for the anime genre collections ('[A] ...') and the Anime and Non-Anime collections
         if 'mixed-' in TYPE:
-            if search('^\[A]-.+', title): posterPath = sub(f'{type}$', 'anime', postersDir) + '/' + sub('^\[A]-', '', title).lower().replace(' ', '-') + '.png'
+            if search('^\[A]\s.+', title): posterPath = sub(f'{type}$', 'anime', postersDir) + '/' + sub('^\[A]\s', '', title).lower().replace(' ', '-') + '.png'
             elif search('^.*Anime$', title): posterPath = sub(f'{type}$', 'general', postersDir) + '/' + title.lower().replace(' ', '-') + '.png'
 
         # If the poster exists, upload it
