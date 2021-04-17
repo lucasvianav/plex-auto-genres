@@ -165,7 +165,12 @@ If so, you'll need to execute a few more steps:
 2. If you the same error persists, install again specifically the not found module (I had to do it to "idna_ssl": `pip3 install --upgrade --target=path/to/plex-manage-collections/ idna_ssl`)
 3. Change the `plex-manage-collections` directory's permission in order for the user running Tautulli will be able to read, write and execute files inside it (in my case, I simply ran `chmod -R 777 path/to/plex-manage-collections/` so that any user will have rwx permissons)
 
-###### Note: The `update.py` script'll only generate and sort the collections, but no update their posters (you'll have to do it manually). If you want it to set posters everytime it runs, simply swap the script's 6th line from `for lib in libraries: os.system(f'cd ..; python3 plexmngcollections.py -l {lib["name"]} -t {lib["type"]} -g -s -y')` to `for lib in libraries: os.system(f'cd ..; python3 plexmngcollections.py -l {lib["name"]} -t {lib["type"]} -g -s -y -p')`
+###### Note: The `update.py` script'll only generate and sort the collections, but not update their posters (you'll have to do it manually). If you want it to set posters everytime it runs, simply swap the script's 6th line from 
+    for lib in libraries: os.system(f'cd ..; python3 plexmngcollections.py -l {lib["name"]} -t {lib["type"]} -g -s -y')
+
+to
+
+    for lib in libraries: os.system(f'cd ..; python3 plexmngcollections.py -l {lib["name"]} -t {lib["type"]} -g -s -y -p')
 
 ## <a id="credits"></a>Credits
 This script is a fork from [ShaneIsrael](https://github.com/ShaneIsrael)'s [Plex Auto Genres](https://github.com/ShaneIsrael/plex-auto-genres), which works great for the **Standard media and anime are separated** setup option. I've only done some cleanup/modularization and made it compatible with the **Standard media and anime are mixed** setup option (as it is the one I use) and the Tautulli trigger.
